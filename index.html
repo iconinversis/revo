@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Dental Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .tab-content { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans">
+
+    <nav class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+        <h1 class="text-2xl font-bold text-blue-600">DENTAL<span>CARE</span></h1>
+        <div class="space-x-4">
+            <button onclick="showTab('reserva')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Solicitar Cita</button>
+            <button onclick="showTab('admin')" class="text-slate-500 hover:text-blue-600 font-medium">Panel Admin</button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto mt-10 p-4">
+
+        <section id="reserva" class="tab-content active animate-fade-in">
+            <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+                <h2 class="text-3xl font-semibold text-slate-800 mb-6">Reserva tu cita online</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Tratamiento</label>
+                        <select id="servicio" class="mt-1 block w-full p-3 border rounded-md bg-slate-50">
+                            <option>Limpieza Dental</option>
+                            <option>Ortodoncia</option>
+                            <option>Implantes</option>
+                            <option>Urgencia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Fecha</label>
+                        <input type="date" id="fecha" class="mt-1 block w-full p-3 border rounded-md bg-slate-50">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700">Nombre Completo</label>
+                        <input type="text" id="nombre" placeholder="Ej: Juan Pérez" class="mt-1 block w-full p-3 border rounded-md bg-slate-50">
+                    </div>
+                    <button onclick="crearCita()" class="md:col-span-2 bg-green-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-green-600 shadow-lg transform hover:scale-[1.02] transition">Confirmar Mi Cita Now</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin" class="tab-content">
+            <div class="bg-slate-800 text-white p-8 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Panel de Control Médicos</h2>
+                    <span class="bg-blue-500 text-xs px-2 py-1 rounded">Sesión Activa</span>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-slate-700 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm">Citas Hoy</p>
+                        <p class="text-2xl font-bold" id="totalCitas">0</p>
+                    </div>
+                    <div class="bg-slate-700 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm">Nuevos Pacientes</p>
+                        <p class="text-2xl font-bold">12</p>
+                    </div>
+                    <div class="bg-slate-700 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm">Ingresos Estim.</p>
+                        <p class="text-2xl font-bold text-green-400">450€</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-slate-400 border-b border-slate-600">
+                            <tr>
+                                <th class="pb-3">Paciente</th>
+                                <th class="pb-3">Servicio</th>
+                                <th class="pb-3">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaCitas" class="divide-y divide-slate-700">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Función para cambiar de vista (Frontend vs Admin)
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Lógica simple de administración
+        let citas = [];
+
+        function crearCita() {
+            const nombre = document.getElementById('nombre').value;
+            const servicio = document.getElementById('servicio').value;
+            const fecha = document.getElementById('fecha').value;
+
+            if(!nombre || !fecha) return alert("Por favor completa los datos");
+
+            const nuevaCita = { nombre, servicio, fecha };
+            citas.push(nuevaCita);
+            actualizarPanel();
+            
+            alert("¡Cita enviada con éxito! Revisa el panel de admin.");
+            document.getElementById('nombre').value = "";
+        }
+
+        function actualizarPanel() {
+            const lista = document.getElementById('listaCitas');
+            document.getElementById('totalCitas').innerText = citas.length;
+            
+            lista.innerHTML = citas.map(cita => `
+                <tr class="hover:bg-slate-700 transition">
+                    <td class="py-4 font-medium">${cita.nombre}</td>
+                    <td class="py-4 text-slate-300">${cita.servicio}</td>
+                    <td class="py-4"><span class="bg-yellow-900 text-yellow-200 px-2 py-1 rounded text-xs">Pendiente</span></td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
